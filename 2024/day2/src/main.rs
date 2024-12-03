@@ -1,21 +1,33 @@
 use std::fs;
 
 fn main() {
-    fs::read_to_string("/home/aidan/Projects/advent_of_code/2024/day2/src/input")
-        .unwrap()
-        .lines()
-        .filter(|line| !line.is_empty())
-        .map(|line| line.split_whitespace())
-        .map(|entries| entries.map(|num: &str| num.parse::<isize>().unwrap()))
-        .filter(|e| is_valid_sequence(e));
+    println!(
+        "{}",
+        fs::read_to_string("/home/aidan/Projects/advent_of_code/2024/day2/src/input")
+            .unwrap()
+            .lines()
+            .filter(|line| !line.is_empty())
+            .map(|line| line.split_whitespace())
+            .map(|entries| {
+                entries
+                    .collect::<Vec<&str>>()
+                    .iter()
+                    .map(|&num| num.parse::<isize>().unwrap())
+                    .collect::<Vec<isize>>()
+            })
+            .filter(|e| is_valid_sequence(e))
+            .count()
+    );
 }
 
-fn is_valid_sequence(v: Vec<isize>) -> bool {
+fn is_valid_sequence(v: &Vec<isize>) -> bool {
     if v.len() <= 1 {
         return true;
     }
     let direction = v[1] - v[0] > 0;
+
     v.iter()
+        .skip(1)
         .fold(Some((v[0], direction)), |acc, x| match acc {
             Some((acc, direction)) => {
                 let diff = x - acc;
