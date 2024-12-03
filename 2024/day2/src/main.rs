@@ -15,29 +15,25 @@ fn main() {
                     .map(|&num| num.parse::<isize>().unwrap())
                     .collect::<Vec<isize>>()
             })
-            .filter(|e| is_valid_sequence(e))
+            .filter(|e| fails_in_sequence(e) < 2)
             .count()
     );
 }
 
-fn is_valid_sequence(v: &Vec<isize>) -> bool {
+fn fails_in_sequence(v: &Vec<isize>) -> isize {
     if v.len() <= 1 {
-        return true;
+        return 0;
     }
     let direction = v[1] - v[0] > 0;
-
+    let mut fails = 0;
     v.iter()
         .skip(1)
-        .fold(Some((v[0], direction)), |acc, x| match acc {
-            Some((acc, direction)) => {
-                let diff = x - acc;
-                if diff.abs() < 1 || diff.abs() > 3 || (diff > 0) != direction {
-                    None
-                } else {
-                    Some((*x, direction))
-                }
+        .fold((v[0], direction), |(acc, direction), x| {
+            let diff = x - acc;
+            if diff.abs() < 1 || diff.abs() > 3 || (diff > 0) != direction {
+                fails += 1;
             }
-            None => None,
-        })
-        .is_some()
+            (*x, direction)
+        });
+    fails
 }
